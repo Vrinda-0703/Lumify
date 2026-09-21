@@ -22,6 +22,24 @@ const userSchema = new mongoose.Schema(
             required: true,
             select: false,
         },
+        preferences: {
+            currency: {
+                type: String,
+                default: "INR",
+                trim: true,
+            },
+            theme: {
+                type: String,
+                enum: ["light", "dark"],
+                default: "light",
+            },
+            notifications: {
+                billReminders: { type: Boolean, default: true },
+                budgetAlerts: { type: Boolean, default: true },
+                weeklyDigest: { type: Boolean, default: false },
+                largeExpenses: { type: Boolean, default: true },
+            },
+        },
     },
     { timestamps: true }
 );

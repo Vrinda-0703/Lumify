@@ -3,20 +3,20 @@ const Transaction = require("../models/Transaction");
 
 const getMonthRange = (month, year) => [new Date(year, month - 1, 1), new Date(year, month, 1)];
 
-const enrich = async (budgets, userId, month, year) => {
-    const [transactions] = await Promise.all([
-        Transaction.find({ user: userId, type: "Expense" }).select("category amount date"),
-    ]);
+const enrich = (budgets, transactions) => {
+    const categorySpentMap = {};
+    let overallSpent = 0;
+
+    for (const t of transactions) {
+        if (t.type === "Expense") {
+            const amt = Number(t.amount || 0);
+            categorySpentMap[t.category] = (categorySpentMap[t.category] || 0) + amt;
+            overallSpent += amt;
+        }
+    }
 
     return budgets.map((budget) => {
-        const spent = transactions
-            .filter((t) => {
-                const d = new Date(t.date);
-                return budget.scope === "overall"
-                    ? d.getMonth() + 1 === Number(budget.month) && d.getFullYear() === Number(budget.year)
-                    : t.category === budget.category && d.getMonth() + 1 === Number(budget.month) && d.getFullYear() === Number(budget.year);
-            })
-            .reduce((sum, t) => sum + Number(t.amount), 0);
+        const spent = budget.scope === "overall" ? overallSpent : (categorySpentMap[budget.category] || 0);
         const progress = budget.amount ? Math.round((spent / budget.amount) * 100) : 0;
         return {
             ...budget.toObject(),
@@ -39,7 +39,7 @@ const getBudgets = async (req, res) => {
             Budget.find({ user: req.user.id, month, year }).sort({ scope: -1, category: 1 }),
             Transaction.find({ user: req.user.id, type: { $in: ["Income", "Expense"] }, date: { $gte: start, $lt: end } }).select("type amount category"),
         ]);
-        const enriched = await enrich(budgets, req.user.id, month, year);
+        const enriched = enrich(budgets, transactions);
         const income = transactions.filter((t) => t.type === "Income").reduce((s, t) => s + Number(t.amount), 0);
         const expense = transactions.filter((t) => t.type === "Expense").reduce((s, t) => s + Number(t.amount), 0);
         const categoryBudgets = enriched.filter((b) => b.scope !== "overall");

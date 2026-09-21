@@ -1,0 +1,11 @@
+const express = require("express");
+const protect = require("../middleware/authMiddleware");
+const controller = require("../controllers/transactionController");
+const router = express.Router();
+router.post("/transfer", protect, controller.transfer);router.get("/shared/:id", protect, controller.sharedTransactions);
+router.post("/", protect, controller.addTransaction);
+router.get("/", protect, controller.getTransactions);
+router.get("/:id", protect, controller.getTransactionById);
+router.put("/:id", protect, controller.updateTransaction);
+router.delete("/:id", protect, controller.deleteTransaction);
+module.exports = router;

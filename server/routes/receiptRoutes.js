@@ -1,0 +1,1 @@
+const express=require("express");const protect=require("../middleware/authMiddleware");const upload=require("../middleware/uploadMiddleware");const {extract}=require("../controllers/receiptController");const r=express.Router();r.post("/extract",protect,upload.single("receipt"),extract);module.exports=r;

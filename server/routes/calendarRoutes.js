@@ -1,0 +1,1 @@
+const express=require("express");const protect=require("../middleware/authMiddleware");const r=express.Router();r.get("/",protect,require("../controllers/featureController").calendar);module.exports=r;

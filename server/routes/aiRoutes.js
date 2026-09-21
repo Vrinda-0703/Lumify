@@ -1,0 +1,1 @@
+const express=require("express");const protect=require("../middleware/authMiddleware");const c=require("../controllers/featureController");const r=express.Router();r.post("/ask",protect,c.ai);r.post("/purchase",protect,c.purchase);r.post("/voice",protect,c.voice);module.exports=r;

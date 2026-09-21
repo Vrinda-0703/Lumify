@@ -1,0 +1,3 @@
+const mongoose=require("mongoose");
+const schema=new mongoose.Schema({user:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true,index:true},title:{type:String,required:true,trim:true,maxlength:120},amount:{type:Number,required:true,min:0.01},dueDate:{type:Date,required:true,index:true},recurring:{type:Boolean,default:false},frequency:{type:String,enum:["Weekly","Monthly","Yearly","None"],default:"None"},notes:{type:String,default:"",maxlength:500},paid:{type:Boolean,default:false}},{timestamps:true});
+schema.index({user:1,dueDate:1,paid:1}); module.exports=mongoose.model("Bill",schema);

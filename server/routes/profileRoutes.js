@@ -1,0 +1,1 @@
+const express=require("express");const protect=require("../middleware/authMiddleware");const c=require("../controllers/profileController");const r=express.Router();r.get("/",protect,c.get);r.put("/",protect,c.update);r.put("/password",protect,c.password);module.exports=r;

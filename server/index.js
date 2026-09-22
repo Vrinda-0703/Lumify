@@ -73,7 +73,7 @@ app.use((err, req, res, next) => {
 const PORT = Number(process.env.PORT) || 5000;
 
 async function startServer() {
-    app.listen(PORT, () => console.log(`Lumify API running on port ${PORT}`));
+    app.listen(PORT, "0.0.0.0", () => console.log(`Lumify API running on port ${PORT}`));
     try {
         await connectDB();
     } catch (error) {

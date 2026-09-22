@@ -2,6 +2,9 @@ import axios from "axios";
 
 const getApiBaseUrl = () => {
     if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+    if (typeof window !== "undefined" && !window.location.hostname.includes("localhost") && !window.location.hostname.includes("127.0.0.1")) {
+        return "https://lumify-backend-qaak.onrender.com/api";
+    }
     if (typeof window !== "undefined") {
         return "/api";
     }
@@ -13,6 +16,8 @@ const API_BASE_URL = getApiBaseUrl();
 // Used for links to server-hosted files such as uploaded receipts.
 export const API_ORIGIN = import.meta.env.VITE_API_URL
     ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "")
+    : typeof window !== "undefined" && !window.location.hostname.includes("localhost") && !window.location.hostname.includes("127.0.0.1")
+    ? "https://lumify-backend-qaak.onrender.com"
     : typeof window !== "undefined"
     ? window.location.origin
     : "http://localhost:5000";

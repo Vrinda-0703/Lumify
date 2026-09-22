@@ -1,11 +1,6 @@
 {
   "outputDirectory": "dist",
-  "cleanUrls": true,
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "https://lumify-backend-qaak.onrender.com/api/"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

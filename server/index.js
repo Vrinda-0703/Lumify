@@ -46,7 +46,17 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/uploads", express.static(path.join(os.tmpdir(), "lumify-uploads")));
 
 app.get("/", (_, res) => res.json({ message: "Lumify API is running", status: "ok" }));
-app.get("/api/health", (_, res) => res.json({ ok: true, service: "Lumify API", timestamp: new Date().toISOString() }));
+app.get("/api/health", (_, res) => {
+    const dbState = require("mongoose").connection.readyState;
+    const states = ["disconnected", "connected", "connecting", "disconnecting"];
+    res.json({
+        ok: dbState === 1,
+        database: states[dbState] || "unknown",
+        hasMongoUri: Boolean(process.env.MONGO_URI),
+        hasJwtSecret: Boolean(process.env.JWT_SECRET),
+        timestamp: new Date().toISOString(),
+    });
+});
 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/transactions", require("./routes/transactionRoutes"));

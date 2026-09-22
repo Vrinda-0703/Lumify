@@ -27,8 +27,9 @@ const signup = async (req, res) => {
         await User.create({ name, email, password: hashedPassword });
         return res.status(201).json({ message: "Account created successfully. Please log in." });
     } catch (error) {
-        if (error.code === 11000) return res.status(400).json({ message: "Unable to create account with these details." });
-        return res.status(500).json({ message: "Unable to create account right now." });
+        console.error("Signup error details:", error);
+        if (error.code === 11000) return res.status(400).json({ message: "An account with this email already exists." });
+        return res.status(500).json({ message: error.message || "Unable to create account right now." });
     }
 };
 

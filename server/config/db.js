@@ -7,10 +7,12 @@ try {
 } catch (_) {}
 
 let cachedPromise = null;
+let lastError = null;
 
 async function connectDB() {
     if (!process.env.MONGO_URI) {
-        throw new Error("MONGO_URI is not configured");
+        lastError = "MONGO_URI is not configured";
+        throw new Error(lastError);
     }
 
     // Reuse existing connection if alive
@@ -24,9 +26,12 @@ async function connectDB() {
             serverSelectionTimeoutMS: 10000,
         }).then((conn) => {
             console.log("MongoDB connected");
+            lastError = null;
             return conn;
         }).catch((err) => {
             cachedPromise = null;
+            lastError = err.message || String(err);
+            console.error("MongoDB connection error:", lastError);
             throw err;
         });
     }
@@ -34,4 +39,7 @@ async function connectDB() {
     return cachedPromise;
 }
 
+const getLastError = () => lastError;
+
 module.exports = connectDB;
+module.exports.getLastError = getLastError;

@@ -52,10 +52,25 @@ app.get("/api/health", (_, res) => {
     res.json({
         ok: dbState === 1,
         database: states[dbState] || "unknown",
+        dbError: connectDB.getLastError ? connectDB.getLastError() : null,
         hasMongoUri: Boolean(process.env.MONGO_URI),
         hasJwtSecret: Boolean(process.env.JWT_SECRET),
         timestamp: new Date().toISOString(),
     });
+});
+
+app.use(async (req, res, next) => {
+    if (req.path.startsWith("/api/") && req.path !== "/api/health") {
+        const mongoose = require("mongoose");
+        if (mongoose.connection.readyState !== 1) {
+            try {
+                await connectDB();
+            } catch (err) {
+                return res.status(503).json({ message: "Database connection failed: " + (err.message || "Cannot connect to MongoDB Atlas.") });
+            }
+        }
+    }
+    next();
 });
 
 app.use("/api/auth", require("./routes/authRoutes"));

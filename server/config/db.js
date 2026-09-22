@@ -1,4 +1,10 @@
 const mongoose = require("mongoose");
+const dns = require("dns");
+
+// Ensure reliable DNS resolution for mongodb+srv:// on Windows/local ISPs
+try {
+    dns.setServers(["8.8.8.8", "1.1.1.1", "8.8.4.4"]);
+} catch (_) {}
 
 let cachedPromise = null;
 
